@@ -173,7 +173,7 @@ class CreateRootForm(forms.Form):
         label=_('Type in some contents'),
         help_text=_(
             'This is just the initial contents of your article. After creating it, you can use more complex features like adding plugins, meta data, related articles etc...'),
-        required=False, widget=widget=SimpleMDEEditor())  # @UndefinedVariable
+        required=False, widget=SimpleMDEEditor())  # @UndefinedVariable
 
 
 class MoveForm(forms.Form):
