@@ -26,6 +26,8 @@ from wiki.core.plugins import registry as plugin_registry
 from wiki.core.utils import object_to_json_response
 from wiki.decorators import get_article
 from wiki.views.mixins import ArticleMixin
+import jieba
+
 
 log = logging.getLogger(__name__)
 
@@ -686,9 +688,17 @@ class SearchView(ListView):
                 articles = articles.filter(id__in=article_ids)
             except (NoRootURL, models.URLPath.DoesNotExist):
                 raise Http404
-        articles = articles.filter(
-            Q(current_revision__title__icontains=self.query) |
-            Q(current_revision__content__icontains=self.query))
+        
+        # 中文搜索 hack
+        keywords = jieba.cut(self.query)
+
+        for keyword in keywords:
+            keyword = keyword.strip()
+            if keyword == '':
+                continue
+            articles = articles.filter(
+                Q(current_revision__title__icontains=keyword) |
+                Q(current_revision__content__icontains=keyword))
         if not permissions.can_moderate(
                 models.URLPath.root().article,
                 self.request.user):
