@@ -20,7 +20,7 @@ from wiki.core import permissions
 from wiki.core.diff import simple_merge
 from wiki.core.plugins.base import PluginSettingsFormMixin
 from wiki.editors import getEditor
-from wiki.simplemde.widgets import SimpleMDEEditor
+from simplemde.widgets import SimpleMDEEditor
 
 validate_slug_numbers = RegexValidator(
     r'^[0-9]+$',
