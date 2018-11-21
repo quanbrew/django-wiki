@@ -33,6 +33,7 @@ install_requirements = [
     "sorl-thumbnail>=12,<13",
     "Markdown>=3.0.0,<3.1.0",
     "django-simplemde",
+    "jieba",
 ]
 
 test_requirements = [
