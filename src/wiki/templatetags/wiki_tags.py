@@ -1,4 +1,5 @@
 import re
+import jieba
 
 from django import template
 from django.apps import apps
@@ -89,54 +90,14 @@ def wiki_messages(context):
 
 # XXX html strong tag is hardcoded
 @register.filter
-def get_content_snippet(content, keyword, max_words=30):
+def get_content_snippet(content, query, max_words=60):
     """
-    Takes some text. Removes html tags and newlines from it.
-    If keyword in this text - returns a short text snippet
-    with keyword wrapped into strong tag and max_words // 2 before and after it.
-    If no keyword - return text[:max_words].
+    截取和高亮
     """
-
-    def clean_text(content):
-        """
-        Removes tags, newlines and spaces from content.
-        Return array of words.
-        """
-
-        # remove html tags
-        content = striptags(content)
-        # remove whitespace
-        words = content.split()
-
-        return words
-
-    max_words = int(max_words)
-
-    match_position = content.lower().find(keyword.lower())
-
-    if match_position != -1:
-        try:
-            match_start = content.rindex(' ', 0, match_position) + 1
-        except ValueError:
-            match_start = 0
-        try:
-            match_end = content.index(' ', match_position + len(keyword))
-        except ValueError:
-            match_end = len(content)
-        all_before = clean_text(content[:match_start])
-        match = content[match_start:match_end]
-        all_after = clean_text(content[match_end:])
-        before_words = all_before[-max_words // 2:]
-        after_words = all_after[:max_words - len(before_words)]
-        before = " ".join(before_words)
-        after = " ".join(after_words)
-        html = ("%s %s %s" % (before, striptags(match), after)).strip()
-        kw_p = re.compile(r'(\S*%s\S*)' % keyword, re.IGNORECASE)
-        html = kw_p.sub(r"<strong>\1</strong>", html)
-
-        return mark_safe(html)
-
-    return " ".join(clean_text(content)[:max_words])
+    content = striptags(content)
+    for keyword in jieba.cut(query):
+        content = content.replace(keyword, '<span style="background-color:aqua" class="search-highlight">{}</span>'.format(keyword))
+    return mark_safe(content)
 
 
 @register.filter
