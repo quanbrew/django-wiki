@@ -3,32 +3,27 @@
 
 {% addtoblock "js" %}
 <script type="text/javascript">
-function insert_image(data) {
-    if (typeof data == "number") {
-        image_id = data;
-        $("#img_title").text(" {{ _("Insert Image")|escapejs }} " + image_id);
-        $("#img_modal").on('shown.bs.modal', function(){
-            $(this).find('#img_caption').focus();
-        });
-        $("#img_modal").modal();
-   } else {
-        align = data.img_align.options[data.img_align.selectedIndex].text;
-        size = data.img_size.options[data.img_size.selectedIndex].text;
-        caption = data.img_caption.value;
-
-        data.img_align.selectedIndex = 0;
-        data.img_size.selectedIndex = 0;
-        data.img_caption.value = "";
-
-        tag = '\n[image:'+image_id;
-        if (align != "center") tag = tag + ' align:'+align;
-        if (size != "default") tag = tag + ' size:'+size;
-
-        if (caption == '')
-            $('#id_content').insertAtCaret(tag+']\n\n');
-        else
-            $('#id_content').insertAtCaret(tag+']\n    '+caption+'\n\n');
+$(".editor-toolbar").find("a").attr("href", "javascript:void(0)");
+function updateCodeMirror(data){
+    var cm = $('.CodeMirror')[0].CodeMirror;
+    var doc = cm.getDoc();
+    var cursor = doc.getCursor(); // gets the line number in the cursor position
+    var line = doc.getLine(cursor.line); // get the line contents
+    var pos = { // create a new object to avoid mutation of the original selection
+        line: cursor.line,
+        ch: line.length - 1 // set the character position to the end of the line
     }
+    doc.replaceRange('\n'+data+'\n', pos); // adds a new line
+}
+function insert_image(image_id) {
+  align=prompt('Enter an alignment. \'left\' or \'right\':', 'right');
+  caption=prompt('Enter a caption text. You may use markdown. You can edit the text after...');
+  imagetag = '\n[image:'+image_id+' align:'+align+']';
+  if (! caption == '') {
+    updateCodeMirror(imagetag+'\n    '+caption+'\n\n');
+  } else {
+    updateCodeMirror(imagetag+'\n\n');
+  }
 }
 function add_image(form) {
     $(form).submit();
