@@ -16,8 +16,8 @@ function updateCodeMirror(data){
     doc.replaceRange('\n'+data+'\n', pos); // adds a new line
 }
 function insert_image(image_id) {
-  align=prompt('Enter an alignment. \'left\' or \'right\':', 'right');
-  caption=prompt('Enter a caption text. You may use markdown. You can edit the text after...');
+  align="right";
+  caption="";
   imagetag = '\n[image:'+image_id+' align:'+align+']';
   if (! caption == '') {
     updateCodeMirror(imagetag+'\n    '+caption+'\n\n');
